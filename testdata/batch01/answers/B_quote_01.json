@@ -1,0 +1,47 @@
+{
+  "vendor": "B",
+  "doc_type": "quote",
+  "doc_no": "Q2609335",
+  "doc_date": "2026-09-16",
+  "po_no": null,
+  "items": [
+    {
+      "part_no": "FP-HS-3001",
+      "raw_part": "fphs3001",
+      "name": "塑膠本體 20P",
+      "spec": "LCP 黑色 UL94V-0",
+      "qty": 50000,
+      "unit_price": 2.75,
+      "amount": 137500.0
+    },
+    {
+      "part_no": "FP-HS-3002",
+      "raw_part": "fphs3002",
+      "name": "塑膠本體 40P",
+      "spec": "LCP 黑色 UL94V-0",
+      "qty": 20000,
+      "unit_price": 4.1,
+      "amount": 82000.0
+    },
+    {
+      "part_no": "FP-CP-3101",
+      "raw_part": "fpcp3101",
+      "name": "防塵蓋",
+      "spec": "PBT 白色",
+      "qty": 20000,
+      "unit_price": 0.58,
+      "amount": 11600.0
+    }
+  ],
+  "subtotal": 231100.0,
+  "tax": 11555.0,
+  "total": 242655.0,
+  "valid_until": "2026-10-16",
+  "expected_anomalies": [],
+  "doc_id": "B_quote_01",
+  "files": [
+    "B_quote_01_scan.pdf"
+  ],
+  "vendor_code": "V002",
+  "vendor_name": "恆昇塑膠工業有限公司"
+}

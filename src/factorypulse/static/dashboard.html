@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FactoryPulse 儀表板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root { --bg:#f5f7fa; --card:#fff; --ink:#1f2933; --muted:#6b7785; --line:#e3e8ee;
+          --brand:#1f3864; --bad:#c0392b; --warn:#b7791f; --good:#2f855a; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#111418; --card:#1b2027; --ink:#e6e9ee; --muted:#9aa5b1; --line:#2c333c;
+            --brand:#8fb3ff; --bad:#ff7b6b; --warn:#f6c26b; --good:#68d391; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",system-ui,sans-serif; }
+  header { padding:20px 24px 8px; display:flex; flex-wrap:wrap; align-items:baseline; gap:12px; }
+  h1 { font-size:20px; margin:0; color:var(--brand); }
+  .sub { color:var(--muted); font-size:13px; }
+  main { padding:8px 24px 32px; display:grid; gap:16px; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+  .kpi .label { color:var(--muted); font-size:13px; }
+  .kpi .value { font-size:26px; font-weight:700; margin-top:4px; font-variant-numeric:tabular-nums; }
+  .kpi .note { color:var(--muted); font-size:12px; margin-top:2px; }
+  .charts { display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:16px; }
+  h2 { font-size:15px; margin:0 0 10px; }
+  .chartbox { position:relative; height:260px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; white-space:nowrap; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .tag { display:inline-block; padding:1px 8px; border-radius:99px; font-size:12px; }
+  .tag.bad { background:color-mix(in srgb,var(--bad) 15%,transparent); color:var(--bad); }
+  .tag.good { background:color-mix(in srgb,var(--good) 15%,transparent); color:var(--good); }
+  .scroll { overflow-x:auto; }
+  .err { color:var(--bad); padding:24px; }
+  @media (max-width:600px) { header, main { padding-left:16px; padding-right:16px; }
+                             .charts { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>FactoryPulse 進料到產線</h1>
+  <span class="sub" id="gen">載入中…</span>
+</header>
+<main id="app">
+  <section class="kpis" id="kpis"></section>
+  <section class="charts" id="charts"></section>
+  <section class="card"><h2>良率異常與回查結果</h2><div class="scroll"><table id="incidents"></table></div></section>
+  <section class="card"><h2>批號品質：進料檢驗 vs 產線 AOI</h2><div class="scroll"><table id="lots"></table></div></section>
+</main>
+<script>
+const pct = (v, d = 1) => v == null ? "—" : (v * 100).toFixed(d) + "%";
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store = {   // 金鑰只放在這個分頁的 sessionStorage，不放網址（網址會留在瀏覽紀錄與伺服器日誌）
+  get() { try { return sessionStorage.getItem("fpKey") || ""; } catch { return ""; } },
+  set(v) { try { sessionStorage.setItem("fpKey", v); } catch {} },
+};
+const app = document.getElementById("app");
+const pageHtml = app.innerHTML;
+
+function askKey(msg) {
+  document.getElementById("gen").textContent = "";
+  app.innerHTML = `<form class="card" id="login" style="max-width:420px">
+    <h2>輸入 API 金鑰</h2><p class="sub">${esc(msg || ".env 裡的 FP_API_TOKEN")}</p>
+    <input type="password" id="k" autocomplete="off" style="width:100%;padding:8px;margin:8px 0;font:inherit">
+    <button style="padding:8px 16px;font:inherit">開啟儀表板</button></form>`;
+  document.getElementById("login").onsubmit = e => {
+    e.preventDefault(); store.set(document.getElementById("k").value.trim()); load(); };
+}
+
+function load() {
+  // 先試著不帶金鑰載入：伺服器開了 FP_DASHBOARD_PUBLIC=1 就直接顯示；回 401 才請使用者輸入
+  const key = store.get();
+  fetch("/api/dashboard", key ? { headers: { "X-API-Key": key } } : {})
+    .then(r => {
+      if (r.status === 401) { store.set(""); throw Object.assign(new Error("需要金鑰"), { auth: true, hadKey: !!key }); }
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(d => { app.innerHTML = pageHtml; render(d); })
+    .catch(e => e.auth ? askKey(e.hadKey ? "金鑰錯誤，請重新輸入" : undefined) :
+      (app.innerHTML = `<div class="err">無法載入：${esc(e.message)}</div>`));
+}
+load();
+
+function render(d) {
+  document.getElementById("gen").textContent = `資料日期 ${d.generated}`;
+  const k = d.kpi;
+  const tiles = [
+    ["自動入帳率", pct(k.auto_rate, 0), `文件 ${k.docs} 份、信件 ${k.mails} 封`],
+    ["省下時間", `${Math.round(k.saved_minutes)} 分`, k.baseline_is_assumed ? "人工基準為假設值" : "依現場計時"],
+    ["未結進料異常", k.open_anomalies, "價格、數量、交期、品質"],
+    ["良率異常天數", k.yield_incidents, "p-chart 失控點"],
+  ];
+  document.getElementById("kpis").innerHTML = tiles.map(([l, v, n]) =>
+    `<div class="card kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="note">${esc(n)}</div></div>`).join("");
+
+  const charts = document.getElementById("charts");
+  for (const [line, pts] of Object.entries(d.charts)) {
+    const box = document.createElement("div");
+    box.className = "card";
+    box.innerHTML = `<h2>${esc(d.line_names[line] || line)} AOI 不良率管制圖（p-chart）</h2><div class="chartbox"><canvas></canvas></div>`;
+    charts.appendChild(box);
+    const bad = css("--bad"), brand = css("--brand"), muted = css("--muted");
+    new Chart(box.querySelector("canvas"), {
+      type: "line",
+      data: {
+        labels: pts.map(p => p.date.slice(5)),
+        datasets: [
+          { label: "不良率", data: pts.map(p => p.p * 100), borderColor: brand, backgroundColor: brand, tension: 0,
+            pointRadius: pts.map(p => p.rules.length ? 5 : 3),
+            pointBackgroundColor: pts.map(p => p.rules.length ? bad : brand) },
+          { label: "管制上限 UCL", data: pts.map(p => p.ucl * 100), borderColor: bad, borderDash: [6, 4],
+            pointRadius: 0, stepped: "middle", borderWidth: 1.5 },
+          { label: "中心線", data: pts.map(p => p.center * 100), borderColor: muted, pointRadius: 0, borderWidth: 1 },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false, animation: false,
+        scales: { y: { beginAtZero: true, ticks: { callback: v => v + "%", color: muted }, grid: { color: css("--line") } },
+                  x: { ticks: { color: muted }, grid: { display: false } } },
+        plugins: { legend: { labels: { color: css("--ink"), boxWidth: 12 } },
+                   tooltip: { callbacks: { afterBody: items => {
+                     const p = pts[items[0].dataIndex];
+                     return [`檢驗 ${p.n} 片、NG ${p.ng} 片`, ...p.rules]; } } } },
+      },
+    });
+  }
+
+  document.getElementById("incidents").innerHTML =
+    `<tr><th>日期</th><th>產線</th><th>不良率</th><th>上限</th><th>疑似批號</th><th>回查結論</th></tr>` +
+    (d.incidents.length ? d.incidents.map(i => `<tr><td>${i.date}</td><td>${esc(i.line)}</td>
+      <td class="num">${pct(i.ng_rate)}</td><td class="num">${pct(i.ucl)}</td>
+      <td>${i.suspect ? `<span class="tag bad">${esc(i.suspect)}</span>` : `<span class="tag good">無批號關聯</span>`}</td>
+      <td>${esc(i.conclusion)}</td></tr>`).join("") : `<tr><td colspan="6">目前沒有良率異常</td></tr>`);
+
+  document.getElementById("lots").innerHTML =
+    `<tr><th>料號</th><th>批號</th><th>供應商</th><th>工單</th><th>產線片數</th><th>產線 NG 率</th><th>進料抽檢不良率</th><th>供應商判定</th></tr>` +
+    d.lots.map(l => `<tr><td>${esc(l.part_no)}</td><td>${esc(l.lot_no)}</td><td>${esc(l.vendor)}</td>
+      <td class="num">${l.wos}</td><td class="num">${l.units.toLocaleString()}</td>
+      <td class="num">${l.ng_rate > 0.03 ? `<span class="tag bad">${pct(l.ng_rate)}</span>` : pct(l.ng_rate)}</td>
+      <td class="num">${l.iqc_rate == null ? "無紀錄" : pct(l.iqc_rate)}</td><td>${esc(l.iqc_result || "—")}</td></tr>`).join("");
+}
+</script>
+</body>
+</html>

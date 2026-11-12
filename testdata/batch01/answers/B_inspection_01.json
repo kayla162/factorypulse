@@ -1,0 +1,50 @@
+{
+  "vendor": "B",
+  "doc_type": "inspection",
+  "doc_no": "QC26102601",
+  "doc_date": "2026-10-26",
+  "po_no": "PO26100003",
+  "items": [
+    {
+      "part_no": "FP-HS-3001",
+      "raw_part": "fphs3001",
+      "name": "塑膠本體 20P",
+      "lot_no": "L261026-01",
+      "qty": 8800,
+      "sample": 125,
+      "defects": 0,
+      "result": "OK",
+      "thickness": null
+    },
+    {
+      "part_no": "FP-HS-3002",
+      "raw_part": "fphs3002",
+      "name": "塑膠本體 40P",
+      "lot_no": "L261026-02",
+      "qty": 50000,
+      "sample": 200,
+      "defects": 0,
+      "result": "OK",
+      "thickness": null
+    },
+    {
+      "part_no": "FP-CP-3101",
+      "raw_part": "fpcp3101",
+      "name": "防塵蓋",
+      "lot_no": "L261026-03",
+      "qty": 5000,
+      "sample": 125,
+      "defects": 0,
+      "result": "OK",
+      "thickness": null
+    }
+  ],
+  "ref_delivery": "D26102601",
+  "expected_anomalies": [],
+  "doc_id": "B_inspection_01",
+  "files": [
+    "B_inspection_01_scan.pdf"
+  ],
+  "vendor_code": "V002",
+  "vendor_name": "恆昇塑膠工業有限公司"
+}

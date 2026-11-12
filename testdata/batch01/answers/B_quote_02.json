@@ -1,0 +1,53 @@
+{
+  "vendor": "B",
+  "doc_type": "quote",
+  "doc_no": "Q2609446",
+  "doc_date": "2026-09-11",
+  "po_no": null,
+  "items": [
+    {
+      "part_no": "FP-CP-3101",
+      "raw_part": "fpcp3101",
+      "name": "防塵蓋",
+      "spec": "PBT 白色",
+      "qty": 10000,
+      "unit_price": 0.65,
+      "amount": 6500.0
+    },
+    {
+      "part_no": "FP-HS-3001",
+      "raw_part": "fphs3001",
+      "name": "塑膠本體 20P",
+      "spec": "LCP 黑色 UL94V-0",
+      "qty": 10000,
+      "unit_price": 2.75,
+      "amount": 27500.0
+    },
+    {
+      "part_no": "FP-HS-3002",
+      "raw_part": "fphs3002",
+      "name": "塑膠本體 40P",
+      "spec": "LCP 黑色 UL94V-0",
+      "qty": 10000,
+      "unit_price": 4.1,
+      "amount": 41000.0
+    }
+  ],
+  "subtotal": 75000.0,
+  "tax": 3750.0,
+  "total": 78750.0,
+  "valid_until": "2026-10-11",
+  "expected_anomalies": [
+    {
+      "code": "PRICE_INCREASE",
+      "part_no": "FP-CP-3101",
+      "detail": "報價 0.65 高於 ERP 現行單價 0.58"
+    }
+  ],
+  "doc_id": "B_quote_02",
+  "files": [
+    "B_quote_02_scan.pdf"
+  ],
+  "vendor_code": "V002",
+  "vendor_name": "恆昇塑膠工業有限公司"
+}

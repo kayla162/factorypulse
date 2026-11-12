@@ -1,0 +1,140 @@
+[
+  {
+    "file": "A_quote_01.eml",
+    "label": "採購",
+    "doc_type": "quote",
+    "doc_id": "A_quote_01"
+  },
+  {
+    "file": "A_delivery_01.eml",
+    "label": "採購",
+    "doc_type": "delivery",
+    "doc_id": "A_delivery_01"
+  },
+  {
+    "file": "A_inspection_01.eml",
+    "label": "品保",
+    "doc_type": "inspection",
+    "doc_id": "A_inspection_01"
+  },
+  {
+    "file": "A_quote_02.eml",
+    "label": "採購",
+    "doc_type": "quote",
+    "doc_id": "A_quote_02"
+  },
+  {
+    "file": "A_delivery_02.eml",
+    "label": "採購",
+    "doc_type": "delivery",
+    "doc_id": "A_delivery_02"
+  },
+  {
+    "file": "A_inspection_02.eml",
+    "label": "品保",
+    "doc_type": "inspection",
+    "doc_id": "A_inspection_02"
+  },
+  {
+    "file": "B_quote_01.eml",
+    "label": "採購",
+    "doc_type": "quote",
+    "doc_id": "B_quote_01"
+  },
+  {
+    "file": "B_delivery_01.eml",
+    "label": "採購",
+    "doc_type": "delivery",
+    "doc_id": "B_delivery_01"
+  },
+  {
+    "file": "B_inspection_01.eml",
+    "label": "品保",
+    "doc_type": "inspection",
+    "doc_id": "B_inspection_01"
+  },
+  {
+    "file": "B_quote_02.eml",
+    "label": "採購",
+    "doc_type": "quote",
+    "doc_id": "B_quote_02"
+  },
+  {
+    "file": "B_delivery_02.eml",
+    "label": "採購",
+    "doc_type": "delivery",
+    "doc_id": "B_delivery_02"
+  },
+  {
+    "file": "B_inspection_02.eml",
+    "label": "品保",
+    "doc_type": "inspection",
+    "doc_id": "B_inspection_02"
+  },
+  {
+    "file": "C_quote_01.eml",
+    "label": "採購",
+    "doc_type": "quote",
+    "doc_id": "C_quote_01"
+  },
+  {
+    "file": "C_delivery_01.eml",
+    "label": "採購",
+    "doc_type": "delivery",
+    "doc_id": "C_delivery_01"
+  },
+  {
+    "file": "C_inspection_01.eml",
+    "label": "品保",
+    "doc_type": "inspection",
+    "doc_id": "C_inspection_01"
+  },
+  {
+    "file": "C_quote_02.eml",
+    "label": "採購",
+    "doc_type": "quote",
+    "doc_id": "C_quote_02"
+  },
+  {
+    "file": "C_delivery_02.eml",
+    "label": "採購",
+    "doc_type": "delivery",
+    "doc_id": "C_delivery_02"
+  },
+  {
+    "file": "C_inspection_02.eml",
+    "label": "品保",
+    "doc_type": "inspection",
+    "doc_id": "C_inspection_02"
+  },
+  {
+    "file": "noise_01.eml",
+    "label": "客訴",
+    "doc_type": null,
+    "doc_id": null
+  },
+  {
+    "file": "noise_02.eml",
+    "label": "其他",
+    "doc_type": null,
+    "doc_id": null
+  },
+  {
+    "file": "noise_03.eml",
+    "label": "採購",
+    "doc_type": null,
+    "doc_id": null
+  },
+  {
+    "file": "noise_04.eml",
+    "label": "其他",
+    "doc_type": null,
+    "doc_id": null
+  },
+  {
+    "file": "noise_05.eml",
+    "label": "品保",
+    "doc_type": null,
+    "doc_id": null
+  }
+]

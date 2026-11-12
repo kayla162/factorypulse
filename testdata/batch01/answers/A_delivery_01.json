@@ -1,0 +1,38 @@
+{
+  "vendor": "A",
+  "doc_type": "delivery",
+  "doc_no": "D26101801",
+  "doc_date": "2026-10-18",
+  "po_no": "PO26100001",
+  "items": [
+    {
+      "part_no": "FP-TM-1002",
+      "raw_part": "FP-TM-1002",
+      "name": "端子 母端",
+      "spec": "磷青銅 0.3t 鍍錫",
+      "qty": 50000,
+      "unit_price": 1.42,
+      "amount": 71000.0
+    },
+    {
+      "part_no": "FP-TM-1001",
+      "raw_part": "FP-TM-1001",
+      "name": "端子 公端",
+      "spec": "磷青銅 0.3t 鍍金 0.2µm",
+      "qty": 5000,
+      "unit_price": 1.85,
+      "amount": 9250.0
+    }
+  ],
+  "subtotal": 80250.0,
+  "tax": 4012.5,
+  "total": 84262.5,
+  "ship_date": "2026-10-18",
+  "expected_anomalies": [],
+  "doc_id": "A_delivery_01",
+  "files": [
+    "A_delivery_01.pdf"
+  ],
+  "vendor_code": "V001",
+  "vendor_name": "永晟精密金屬股份有限公司"
+}

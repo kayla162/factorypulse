@@ -1,0 +1,134 @@
+{
+  "id": "fpDailyReport001",
+  "name": "FactoryPulse 每日日報",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 17 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "c7675367-c7d4-4954-9306-4d7fc180c65b",
+      "name": "平日 17:30",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "b355c58f-e6ae-4a1e-8773-b64bda881bbf",
+      "name": "手動執行",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.FP_API_URL }}/api/reports/daily",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "={{ $env.FP_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 180000
+        }
+      },
+      "id": "8099419a-0b6a-483e-9af1-0b543e75f450",
+      "name": "產生日報",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LINE_API_BASE }}/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.LINE_CHANNEL_ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ to: $env.LINE_TO, messages: [{ type: 'text', text: $json.text + '\\n\\n日報檔案：' + $json.file }] }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "81c267b2-017e-476d-9a11-4860ac789006",
+      "name": "推送日報摘要",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "平日 17:30": {
+      "main": [
+        [
+          {
+            "node": "產生日報",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "手動執行": {
+      "main": [
+        [
+          {
+            "node": "產生日報",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "產生日報": {
+      "main": [
+        [
+          {
+            "node": "推送日報摘要",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Taipei",
+    "errorWorkflow": "fpErrorAlert0001"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,89 @@
+# FactoryPulse 本機環境（所有埠只綁 127.0.0.1）
+#   docker compose up -d mssql                 只開資料庫（命令列開發）
+#   docker compose up -d --build               全套：資料庫＋測試信箱＋API＋n8n
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: factorypulse-mssql
+    environment:
+      ACCEPT_EULA: ${MSSQL_ACCEPT_EULA:?請在 .env 設定 MSSQL_ACCEPT_EULA=Y 表示同意 SQL Server 授權條款}
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?請在 .env 設定 MSSQL_SA_PASSWORD}
+      TZ: Asia/Taipei
+    ports:
+      - "127.0.0.1:${MSSQL_PORT:-14330}:1433"   # 避開預設 1433，以免和其他 SQL Server 衝突
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  # 測試用信箱：只收信、不外寄。網頁介面 http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:v1.27.11
+    container_name: factorypulse-mailpit
+    ports:
+      - "127.0.0.1:8025:8025"   # 網頁與 API
+      - "127.0.0.1:1025:1025"   # SMTP
+    environment:
+      MP_MAX_MESSAGES: 5000
+
+  api:
+    build: .
+    container_name: factorypulse-api
+    depends_on:
+      mssql:
+        condition: service_healthy
+    environment:
+      FP_DB_URL: mssql+pymssql://sa:${MSSQL_SA_PASSWORD}@mssql:1433/factorypulse
+      FP_MAILPIT_URL: http://mailpit:8025
+      FP_API_TOKEN: ${FP_API_TOKEN:?請在 .env 設定 FP_API_TOKEN}
+      FP_LINE_MOCK: "1"
+      # 1＝儀表板（唯讀）不需金鑰，只適合本機示範；會寫入資料的 API 仍需金鑰
+      FP_DASHBOARD_PUBLIC: ${FP_DASHBOARD_PUBLIC:-0}
+      FP_MES_DROP: /app/mes_drop          # MES／AOI 每天匯出的資料夾
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      FP_GEMINI_MODEL: ${FP_GEMINI_MODEL:-gemini-2.5-flash}
+      TZ: Asia/Taipei
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./reports:/app/reports      # 日報直接出現在本機資料夾
+      - ./outbox:/app/outbox
+      - api-data:/app/data
+      - ./testdata/mes_batch01/drop:/app/mes_drop:ro   # 示範用：換成實際 MES 匯出的共用資料夾
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:2.46.6
+    container_name: factorypulse-n8n
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      GENERIC_TIMEZONE: Asia/Taipei
+      TZ: Asia/Taipei
+      N8N_SECURE_COOKIE: "false"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"     # 讓流程用 $env 讀下列設定
+      FP_API_URL: http://api:8000
+      FP_API_TOKEN: ${FP_API_TOKEN}
+      # 沒填 LINE 金鑰時，送到 API 內建的假 LINE，訊息寫進 outbox/line_mock.jsonl
+      LINE_API_BASE: ${LINE_API_BASE:-http://api:8000/mock/line}
+      LINE_CHANNEL_ACCESS_TOKEN: ${LINE_CHANNEL_ACCESS_TOKEN:-mock-token}
+      LINE_TO: ${LINE_TO:-mock-group}
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - n8n-data:/home/node/.n8n
+      - ./n8n/workflows:/workflows:ro
+
+volumes:
+  mssql-data:
+  api-data:
+  n8n-data:

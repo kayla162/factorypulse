@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+*.db
+
+# 機密：密碼、API 金鑰只放 .env（範本見 .env.example）
+.env
+
+# 執行產物
+data/
+outbox/
+reports/*
+# 評測報告留在版控，README 會連結
+!reports/eval_batch01.md
+!reports/eval_mes_batch01.md

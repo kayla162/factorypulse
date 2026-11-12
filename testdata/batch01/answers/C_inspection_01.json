@@ -1,0 +1,45 @@
+{
+  "vendor": "C",
+  "doc_type": "inspection",
+  "doc_no": "QC26101201",
+  "doc_date": "2026-10-12",
+  "po_no": "PO26100005",
+  "items": [
+    {
+      "part_no": "FP-PL-4001",
+      "raw_part": "YS-AU-020",
+      "name": "電鍍加工 鍍金",
+      "lot_no": "L261012-01",
+      "qty": 10000,
+      "sample": 200,
+      "defects": 4,
+      "result": "OK",
+      "thickness": 0.217
+    },
+    {
+      "part_no": "FP-PL-4002",
+      "raw_part": "YS-SN-200",
+      "name": "電鍍加工 鍍錫",
+      "lot_no": "L261012-02",
+      "qty": 20000,
+      "sample": 200,
+      "defects": 0,
+      "result": "OK",
+      "thickness": 0.239
+    }
+  ],
+  "ref_delivery": "D26101201",
+  "expected_anomalies": [
+    {
+      "code": "DEFECT_RATE_HIGH",
+      "part_no": "FP-PL-4001",
+      "detail": "不良率 2.0% 超過 AQL 1%，供應商卻判 OK"
+    }
+  ],
+  "doc_id": "C_inspection_01",
+  "files": [
+    "C_inspection_01.xlsx"
+  ],
+  "vendor_code": "V003",
+  "vendor_name": "宇碩表面處理科技股份有限公司"
+}

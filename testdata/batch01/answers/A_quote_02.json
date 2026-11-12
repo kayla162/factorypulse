@@ -1,0 +1,38 @@
+{
+  "vendor": "A",
+  "doc_type": "quote",
+  "doc_no": "Q2609435",
+  "doc_date": "2026-09-12",
+  "po_no": null,
+  "items": [
+    {
+      "part_no": "FP-SH-2001",
+      "raw_part": "FP-SH-2001",
+      "name": "金屬外殼",
+      "spec": "SUS304 0.2t",
+      "qty": 10000,
+      "unit_price": 3.6,
+      "amount": 36000.0
+    },
+    {
+      "part_no": "FP-TM-1001",
+      "raw_part": "FP-TM-1001",
+      "name": "端子 公端",
+      "spec": "磷青銅 0.3t 鍍金 0.2µm",
+      "qty": 50000,
+      "unit_price": 1.85,
+      "amount": 92500.0
+    }
+  ],
+  "subtotal": 128500.0,
+  "tax": 6425.0,
+  "total": 134925.0,
+  "valid_until": "2026-10-12",
+  "expected_anomalies": [],
+  "doc_id": "A_quote_02",
+  "files": [
+    "A_quote_02.pdf"
+  ],
+  "vendor_code": "V001",
+  "vendor_name": "永晟精密金屬股份有限公司"
+}

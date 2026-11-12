@@ -1,0 +1,36 @@
+[project]
+name = "factorypulse"
+version = "0.1.0"
+description = "連接器廠進料到產線自動化：供應商文件解析、ERP 寫入、異常比對與通知"
+requires-python = ">=3.11"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "pymupdf>=1.24",
+    "openpyxl>=3.1",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+mssql = ["pymssql>=2.3"]
+ocr = ["rapidocr>=3.0", "onnxruntime>=1.18"]
+llm = ["google-genai>=1.0"]
+api = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "python-multipart>=0.0.9", "httpx>=0.27"]
+testdata = ["numpy", "pillow"]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[project.scripts]
+factorypulse = "factorypulse.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["mssql: 需要本機 SQL Server（docker compose up -d mssql）"]
+
+[tool.setuptools.package-data]
+factorypulse = ["static/*.html"]

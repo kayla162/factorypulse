@@ -1,0 +1,159 @@
+{
+  "id": "fpPollInbox00001",
+  "name": "FactoryPulse 收信與異常通知",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "b8208177-067c-4641-9e7c-996cdc7d52bd",
+      "name": "每 5 分鐘",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e0105352-4350-44c5-a776-780df91fd965",
+      "name": "手動執行",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.FP_API_URL }}/api/poll",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "={{ $env.FP_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 180000
+        }
+      },
+      "id": "a425a6fb-e66a-498e-a1f4-c5621263e692",
+      "name": "收信並處理",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "notices",
+        "options": {}
+      },
+      "id": "dce927e3-4013-4369-b983-c886e5d48092",
+      "name": "拆成一則一則通知",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        520,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LINE_API_BASE }}/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.LINE_CHANNEL_ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ to: $env.LINE_TO, messages: [{ type: 'text', text: $json.text }] }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "0805e1aa-7d80-4e1f-bde6-c17a4566e980",
+      "name": "推送 LINE",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "每 5 分鐘": {
+      "main": [
+        [
+          {
+            "node": "收信並處理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "手動執行": {
+      "main": [
+        [
+          {
+            "node": "收信並處理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "收信並處理": {
+      "main": [
+        [
+          {
+            "node": "拆成一則一則通知",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "拆成一則一則通知": {
+      "main": [
+        [
+          {
+            "node": "推送 LINE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Taipei",
+    "errorWorkflow": "fpErrorAlert0001"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,22 @@
+name: ci
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      FP_LLM: "0"        # CI 不呼叫真的 LLM
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: OpenCV 需要的系統函式庫（OCR 用）
+        run: sudo apt-get update && sudo apt-get install -y libgl1 libglib2.0-0
+      - run: pip install -e ".[dev,ocr,api,llm]"
+      - name: 單元與整合測試（SQLite）
+        run: pytest -q -m "not mssql"
+      - name: 對標準答案評測，有誤報、漏抓或讀錯就失敗
+        run: python -m factorypulse --db-url sqlite:///eval.db eval --strict --no-llm
+      - name: 產線評測：ETL 清洗、良率異常偵測、批號回查
+        run: python -m factorypulse --db-url sqlite:///mes.db eval-mes --strict

@@ -1,0 +1,6 @@
+# 統一用 LF；測試信件與二進位檔保持原樣，避免換行轉換改動內容與雜湊
+* text=auto eol=lf
+*.eml -text
+*.pdf binary
+*.xlsx binary
+*.png binary

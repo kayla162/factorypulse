@@ -1,0 +1,39 @@
+{
+  "vendor": "A",
+  "doc_type": "inspection",
+  "doc_no": "QC26101801",
+  "doc_date": "2026-10-18",
+  "po_no": "PO26100001",
+  "items": [
+    {
+      "part_no": "FP-TM-1002",
+      "raw_part": "FP-TM-1002",
+      "name": "端子 母端",
+      "lot_no": "L261018-01",
+      "qty": 50000,
+      "sample": 200,
+      "defects": 0,
+      "result": "OK",
+      "thickness": null
+    },
+    {
+      "part_no": "FP-TM-1001",
+      "raw_part": "FP-TM-1001",
+      "name": "端子 公端",
+      "lot_no": "L261018-02",
+      "qty": 5000,
+      "sample": 125,
+      "defects": 0,
+      "result": "OK",
+      "thickness": null
+    }
+  ],
+  "ref_delivery": "D26101801",
+  "expected_anomalies": [],
+  "doc_id": "A_inspection_01",
+  "files": [
+    "A_inspection_01.pdf"
+  ],
+  "vendor_code": "V001",
+  "vendor_name": "永晟精密金屬股份有限公司"
+}

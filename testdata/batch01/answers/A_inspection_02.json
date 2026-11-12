@@ -1,0 +1,45 @@
+{
+  "vendor": "A",
+  "doc_type": "inspection",
+  "doc_no": "QC26101802",
+  "doc_date": "2026-10-18",
+  "po_no": "PO26100002",
+  "items": [
+    {
+      "part_no": "FP-SH-2001",
+      "raw_part": "FP-SH-2001",
+      "name": "金屬外殼",
+      "lot_no": "L261018-01",
+      "qty": 20000,
+      "sample": 200,
+      "defects": 9,
+      "result": "NG",
+      "thickness": null
+    },
+    {
+      "part_no": "FP-TM-1001",
+      "raw_part": "FP-TM-1001",
+      "name": "端子 公端",
+      "lot_no": "L261018-02",
+      "qty": 50000,
+      "sample": 200,
+      "defects": 1,
+      "result": "OK",
+      "thickness": null
+    }
+  ],
+  "ref_delivery": "D26101802",
+  "expected_anomalies": [
+    {
+      "code": "INSPECTION_NG",
+      "part_no": "FP-SH-2001",
+      "detail": "供應商判定 NG 仍出貨"
+    }
+  ],
+  "doc_id": "A_inspection_02",
+  "files": [
+    "A_inspection_02.pdf"
+  ],
+  "vendor_code": "V001",
+  "vendor_name": "永晟精密金屬股份有限公司"
+}

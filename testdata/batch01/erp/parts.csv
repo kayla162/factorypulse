@@ -1,0 +1,9 @@
+﻿part_no,name,spec,vendor_code,current_unit_price
+FP-TM-1001,端子 公端,磷青銅 0.3t 鍍金 0.2µm,V001,1.85
+FP-TM-1002,端子 母端,磷青銅 0.3t 鍍錫,V001,1.42
+FP-SH-2001,金屬外殼,SUS304 0.2t,V001,3.6
+FP-HS-3001,塑膠本體 20P,LCP 黑色 UL94V-0,V002,2.75
+FP-HS-3002,塑膠本體 40P,LCP 黑色 UL94V-0,V002,4.1
+FP-CP-3101,防塵蓋,PBT 白色,V002,0.58
+FP-PL-4001,電鍍加工 鍍金,端子 Au 0.2µm / Ni 1.5µm,V003,0.95
+FP-PL-4002,電鍍加工 鍍錫,端子 Sn 2µm,V003,0.32

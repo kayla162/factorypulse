@@ -1,0 +1,159 @@
+{
+  "id": "fpMesYield000001",
+  "name": "FactoryPulse 產線良率監控",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8-20 * * 1-6"
+            }
+          ]
+        }
+      },
+      "id": "41e6e9e9-6ebf-4751-a9b1-099d1f6a66c6",
+      "name": "上班時間每小時",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "68f36ed9-65bb-4789-8ae9-01f06062382b",
+      "name": "手動執行",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.FP_API_URL }}/api/mes/run",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "={{ $env.FP_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "dc7a8809-95a5-4bee-b94e-b44d0bdb18cc",
+      "name": "匯入 MES 並算良率",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "notices",
+        "options": {}
+      },
+      "id": "902bb1e8-9f5e-4728-acd8-5fd87c4b8a1c",
+      "name": "拆成一則一則通知",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        520,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LINE_API_BASE }}/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.LINE_CHANNEL_ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ to: $env.LINE_TO, messages: [{ type: 'text', text: $json.text }] }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "8b254fdf-3d72-47bc-8645-0225f6a4b556",
+      "name": "推送 LINE",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "上班時間每小時": {
+      "main": [
+        [
+          {
+            "node": "匯入 MES 並算良率",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "手動執行": {
+      "main": [
+        [
+          {
+            "node": "匯入 MES 並算良率",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "匯入 MES 並算良率": {
+      "main": [
+        [
+          {
+            "node": "拆成一則一則通知",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "拆成一則一則通知": {
+      "main": [
+        [
+          {
+            "node": "推送 LINE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Taipei",
+    "errorWorkflow": "fpErrorAlert0001"
+  },
+  "pinData": {}
+}

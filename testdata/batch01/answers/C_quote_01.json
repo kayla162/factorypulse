@@ -1,0 +1,38 @@
+{
+  "vendor": "C",
+  "doc_type": "quote",
+  "doc_no": "Q2609466",
+  "doc_date": "2026-09-14",
+  "po_no": null,
+  "items": [
+    {
+      "part_no": "FP-PL-4001",
+      "raw_part": "YS-AU-020",
+      "name": "電鍍加工 鍍金",
+      "spec": "端子 Au 0.2µm / Ni 1.5µm",
+      "qty": 20000,
+      "unit_price": 0.95,
+      "amount": 19000.0
+    },
+    {
+      "part_no": "FP-PL-4002",
+      "raw_part": "YS-SN-200",
+      "name": "電鍍加工 鍍錫",
+      "spec": "端子 Sn 2µm",
+      "qty": 50000,
+      "unit_price": 0.32,
+      "amount": 16000.0
+    }
+  ],
+  "subtotal": 35000.0,
+  "tax": 1750.0,
+  "total": 36750.0,
+  "valid_until": "2026-10-14",
+  "expected_anomalies": [],
+  "doc_id": "C_quote_01",
+  "files": [
+    "C_quote_01.xlsx"
+  ],
+  "vendor_code": "V003",
+  "vendor_name": "宇碩表面處理科技股份有限公司"
+}

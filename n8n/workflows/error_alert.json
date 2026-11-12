@@ -1,0 +1,65 @@
+{
+  "id": "fpErrorAlert0001",
+  "name": "FactoryPulse 排程失敗警示",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "ad148aed-ee61-4161-97af-b850881b3653",
+      "name": "流程出錯時",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LINE_API_BASE }}/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.LINE_CHANNEL_ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ to: $env.LINE_TO, messages: [{ type: 'text', text: '【FactoryPulse 排程失敗】' + $json.workflow.name + '\\n' + ($json.execution.error?.message || '未知錯誤') + '\\n' + ($json.execution.url || '') }] }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "ad25f2cc-5dcf-4e64-8eb9-2df81594d391",
+      "name": "通知管理者",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "流程出錯時": {
+      "main": [
+        [
+          {
+            "node": "通知管理者",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Taipei"
+  },
+  "pinData": {}
+}

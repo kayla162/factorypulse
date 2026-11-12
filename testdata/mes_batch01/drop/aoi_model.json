@@ -1,0 +1,8 @@
+{
+  "model_version": "patchcore-wrn50-metal_nut-center",
+  "source": "kayla162/aoi-patchcore outputs/full_center/metal_nut/results.json",
+  "threshold": 0.755866527557373,
+  "threshold_basis": "cost_optimal（漏檢:過殺 成本 100:1，不良率先驗 1%）",
+  "image_auroc": 0.9990224828934506,
+  "latency_ms_per_image": 62.13
+}
