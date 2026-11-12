@@ -1,0 +1,41 @@
+# FactoryPulse：宇碩（Excel）出貨單 → pad_delivery_staging
+# 用法：在 Power Automate Desktop 新增流程，先建立兩個「輸入變數」FolderPath、DbPassword（後者勾選「敏感」），
+#       再把本檔從下一行開始的全部內容複製，貼到流程設計工具的主流程（Main）。詳見 pad/README.md。
+DateTime.GetCurrentDateTime.Local DateTimeFormat: DateTime.DateTimeFormat.DateAndTime CurrentDateTime=> CurrentDateTime
+Text.FromCustomDateTime DateTime: CurrentDateTime CustomFormat: $'''yyyyMMdd-HHmmss''' Result=> RunTag
+SET FileCount TO 0
+SET RowCount TO 0
+Database.Connect ConnectionString: $'''Provider=SQLOLEDB;Data Source=127.0.0.1,14330;Initial Catalog=factorypulse;User ID=sa;Password=%DbPassword%;''' Connection=> SQLConnection
+Folder.GetFiles Folder: FolderPath FileFilter: $'''*.xlsx''' IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.Name SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Files
+LOOP FOREACH CurrentFile IN Files
+    Excel.LaunchExcel.LaunchAndOpenUnderExistingProcess Path: CurrentFile Visible: False ReadOnly: True Instance=> ExcelInstance
+    Excel.SetActiveWorksheet.ActivateWorksheetByIndex Instance: ExcelInstance Index: 1
+    Excel.ReadFromExcel.ReadCell Instance: ExcelInstance StartColumn: 1 StartRow: 2 ReadAsText: True CellValue=> Title
+    IF Contains(Title, $'''出貨''', False) THEN
+        Excel.ReadFromExcel.ReadCell Instance: ExcelInstance StartColumn: 2 StartRow: 4 ReadAsText: True CellValue=> DocNo
+        Excel.ReadFromExcel.ReadCell Instance: ExcelInstance StartColumn: 5 StartRow: 4 ReadAsText: True CellValue=> DocDate
+        Excel.ReadFromExcel.ReadCell Instance: ExcelInstance StartColumn: 2 StartRow: 5 ReadAsText: True CellValue=> PoNo
+        # 宇碩的明細固定從第 8 列開始（表頭在第 7 列），讀到 A 欄空白為止
+        SET RowNo TO 8
+        LOOP WHILE (RowNo) <= (200)
+            Excel.ReadFromExcel.ReadCells Instance: ExcelInstance StartColumn: 1 StartRow: RowNo EndColumn: 4 EndRow: RowNo ReadAsText: True FirstLineIsHeader: False RangeValue=> Cells
+            IF IsEmpty(Cells[0][0]) THEN
+                EXIT LOOP
+            END
+            # PAD 的 SQL 動作不能用參數，只能把值拼進字串：每個來自檔案的值都要把 ' 換成 ''，避免 SQL 隱碼攻擊
+            Text.Replace Text: Cells[0][0] TextToFind: $'''\'''' IsRegEx: False IgnoreCase: False ReplaceWith: $'''\'\'''' ActivateEscapeSequences: True Result=> SafePart
+            Text.Replace Text: Cells[0][2] TextToFind: $'''\'''' IsRegEx: False IgnoreCase: False ReplaceWith: $'''\'\'''' ActivateEscapeSequences: True Result=> SafeQty
+            Text.Replace Text: Cells[0][3] TextToFind: $'''\'''' IsRegEx: False IgnoreCase: False ReplaceWith: $'''\'\'''' ActivateEscapeSequences: True Result=> SafePrice
+            Text.Replace Text: DocNo TextToFind: $'''\'''' IsRegEx: False IgnoreCase: False ReplaceWith: $'''\'\'''' ActivateEscapeSequences: True Result=> SafeDocNo
+            Text.Replace Text: DocDate TextToFind: $'''\'''' IsRegEx: False IgnoreCase: False ReplaceWith: $'''\'\'''' ActivateEscapeSequences: True Result=> SafeDate
+            Text.Replace Text: PoNo TextToFind: $'''\'''' IsRegEx: False IgnoreCase: False ReplaceWith: $'''\'\'''' ActivateEscapeSequences: True Result=> SafePo
+            Database.ExecuteSqlStatement.Execute Connection: SQLConnection Statement: $'''INSERT INTO pad_delivery_staging (run_tag, file_name, doc_no, doc_date_text, po_no, vendor_part_no, qty_text, unit_price_text, loaded_at) VALUES (N'%RunTag%', N'%CurrentFile.Name%', N'%SafeDocNo%', N'%SafeDate%', N'%SafePo%', N'%SafePart%', N'%SafeQty%', N'%SafePrice%', GETDATE())''' Timeout: 30 Result=> QueryResult
+            Variables.IncreaseVariable Value: RowNo IncrementValue: 1
+            Variables.IncreaseVariable Value: RowCount IncrementValue: 1
+        END
+        Variables.IncreaseVariable Value: FileCount IncrementValue: 1
+    END
+    Excel.CloseExcel.Close Instance: ExcelInstance
+END
+Database.Close Connection: SQLConnection
+Display.ShowMessageDialog.ShowMessage Title: $'''FactoryPulse PAD''' Message: $'''完成：出貨單 %FileCount% 份、明細 %RowCount% 列（批次 %RunTag%）''' Icon: Display.Icon.Information Buttons: Display.Buttons.OK DefaultButton: Display.DefaultButton.Button1 IsTopMost: False ButtonPressed=> ButtonPressed

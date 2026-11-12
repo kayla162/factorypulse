@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>FactoryPulse 操作說明（採購・品保）</title>
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --navy:#24506e; --ink:#2b3a45; --muted:#6b7780; --line:#d5dde5; --soft:#eef3f8;
+          --red:#c0392b; --red-bg:#fbeaea; --amber:#9a6700; --amber-bg:#fff4d6; --green:#2f6f4f; --green-bg:#e6f4ec; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 210mm; min-height: 297mm; padding: 11mm 13mm; font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+         color: var(--ink); font-size: 9.2pt; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.4pt solid var(--navy); padding-bottom: 2mm; }
+  h1 { font-size: 17pt; color: var(--navy); letter-spacing: .04em; }
+  header p { color: var(--muted); font-size: 8.4pt; text-align: right; }
+  h2 { font-size: 10.5pt; color: var(--navy); margin: 4mm 0 1.6mm; letter-spacing: .06em; }
+  .intro { margin-top: 3mm; font-size: 9.6pt; }
+  .intro b { color: var(--navy); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border-bottom: .6pt solid var(--line); padding: 1.5mm 2mm; text-align: left; vertical-align: top; }
+  th { background: var(--soft); color: var(--navy); font-weight: 700; font-size: 8.6pt; }
+  td:first-child { white-space: nowrap; font-weight: 700; }
+  .tag { display: inline-block; padding: .2mm 2mm; border-radius: 99px; font-size: 8.4pt; }
+  .r { background: var(--red-bg); color: var(--red); } .a { background: var(--amber-bg); color: var(--amber); }
+  .g { background: var(--green-bg); color: var(--green); } .n { background: var(--soft); color: var(--navy); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  ul { padding-left: 4.5mm; } li { margin: .6mm 0; }
+  .box { border: .8pt solid var(--line); border-radius: 2mm; padding: 2.5mm 3.5mm; }
+  .help { background: var(--soft); border: none; }
+  .fill { display: inline-block; min-width: 32mm; border-bottom: .6pt solid var(--ink); }
+  footer { margin-top: 4mm; color: var(--muted); font-size: 7.8pt; }
+</style>
+</head>
+<body>
+<header>
+  <h1>FactoryPulse 操作說明</h1>
+  <p>給採購部、品保部同仁<br>版本 2026-11</p>
+</header>
+
+<p class="intro">
+  FactoryPulse 每 5 分鐘收一次採購信箱：<b>讀懂供應商寄來的報價單、出貨單、檢驗報告</b>，對照採購單後自動入帳；有問題才用 LINE 通知你。產線良率每小時檢查一次，良率掉下來時會指出可能是哪一批料。<b>你只需要處理收到的通知。</b>
+</p>
+
+<h2>收到 LINE 通知時怎麼做</h2>
+<table>
+  <tr><th style="width:30mm">通知標題</th><th style="width:46mm">意思</th><th>你要做的事</th><th style="width:16mm">負責</th></tr>
+  <tr><td><span class="tag a">異常提醒</span></td><td>單據已入帳，但單價、數量、交期或品質有問題</td>
+      <td>聯絡供應商確認。單價不符：確認是否漲價、需不需要走改價簽核；短交：追補交日期</td><td>採購</td></tr>
+  <tr><td><span class="tag r">待確認・未入帳</span></td><td>系統沒把握（料號對不到、數字驗算不過、字被印章蓋住），<b>沒有入帳</b></td>
+      <td>打開日報「待人工確認」頁，看原因與建議料號；核對原始單據後在 ERP 手動輸入</td><td>採購</td></tr>
+  <tr><td><span class="tag n">待分類</span></td><td>系統判斷不了這封信該給誰</td>
+      <td>到共用信箱看原信，轉給負責的人</td><td>採購</td></tr>
+  <tr><td><span class="tag n">交期變更</span></td><td>供應商來信通知延後，已對照採購單</td>
+      <td>確認新交期，更新生產排程並通知生管</td><td>採購</td></tr>
+  <tr><td><span class="tag r">客訴</span></td><td>客戶反映產品問題或要求 8D 報告</td>
+      <td>當天回覆客戶收到，依客訴流程處理</td><td>品保</td></tr>
+  <tr><td><span class="tag r">良率異常</span></td><td>產線 AOI 不良率超出管制上限，附上疑似批號與證據</td>
+      <td>依建議隔離該批號庫存與在製品，到現場確認；若寫「跟批號無關」，請製造確認機台</td><td>品保</td></tr>
+  <tr><td><span class="tag r">排程失敗</span></td><td>系統本身出錯，這段時間的信可能還沒處理</td>
+      <td>通知資訊窗口；在恢復前，重要單據請照原本方式人工處理</td><td>資訊</td></tr>
+</table>
+
+<div class="cols">
+  <div>
+    <h2>每天 17:30 的 Excel 日報</h2>
+    <div class="box">
+      <ul>
+        <li><b>摘要</b>：今天收幾封信、幾份自動入帳、省下多少時間</li>
+        <li><b>異常待處理</b>：紅色＝未入帳，黃色＝已入帳但要處理</li>
+        <li><b>待人工確認</b>：今天要你手動處理的清單（最常用）</li>
+        <li><b>採購單到貨</b>：紅色＝逾期未交</li>
+        <li><b>產線良率</b>：每天不良率與管制上限</li>
+      </ul>
+    </div>
+    <h2>儀表板</h2>
+    <div class="box">網址：<span class="fill">http://＿＿＿＿＿/dashboard</span><br>
+      第一次開啟要輸入資訊窗口給你的金鑰，關掉分頁後要重新輸入。</div>
+  </div>
+  <div>
+    <h2>系統「不會」做的事</h2>
+    <div class="box">
+      <ul>
+        <li><b>不會改 ERP 單價</b>：報價變動只提醒，改價仍走簽核</li>
+        <li><b>不會自動修正打錯的料號</b>：只給建議，由你確認</li>
+        <li><b>不會猜看不清楚的數字</b>：被印章蓋住、模糊的欄位一律送人工</li>
+        <li><b>不會重複入帳</b>：同一張單重寄也只算一次</li>
+        <li><b>良率回查只是「疑似」</b>：最後要由品保現場確認</li>
+      </ul>
+    </div>
+    <h2>遇到問題</h2>
+    <div class="box help">
+      平日 17:30 沒收到日報、或數字看起來不對，請聯絡<br>
+      （沒有通知是正常的，代表沒有異常）<br>
+      資訊窗口：<span class="fill"></span>　分機：<span class="fill" style="min-width:16mm"></span><br>
+      回報時請附：單號、供應商、收到通知的時間。
+    </div>
+  </div>
+</div>
+
+<footer>技術細節、設定與故障排除請見 docs/交接文件.md。本說明中的公司、人名與資料皆為示範用。</footer>
+</body>
+</html>

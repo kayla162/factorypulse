@@ -6,7 +6,9 @@ FactoryPulse 自動收信、分類、解析附件、對照採購單、寫入 ERP
 產線端匯入 MES 工單、領料批號與 AOI 判定，用 p 管制圖監控良率，良率掉下來時自動回查是哪個供應商的哪一批料。
 每天產出主管看的 Excel 日報與網頁儀表板，並記錄每一次執行，算出省下多少人工時間。
 
-> 目前進度：**第三週**。所有公司、料號、人名都是虛構的合成資料；AOI 逐片分數是模擬的。
+> 目前進度：**四週規劃全部完成**。所有公司、料號、人名都是虛構的合成資料；AOI 逐片分數是模擬的。
+>
+> 文件：[一頁式操作說明（給採購・品保）](docs/操作說明.pdf)｜[交接文件](docs/交接文件.md)｜[驗收測試清單](docs/測試清單.md)｜[PAD 與 Python 比較](docs/PAD與Python比較.md)
 
 ## 一個完整的故事
 
@@ -38,7 +40,7 @@ FactoryPulse 自動收信、分類、解析附件、對照採購單、寫入 ERP
 | 異常偵測 | 4 / 7，誤報 0 | **7 / 7，誤報 0** |
 | 信件分類 | — | 規則 18 / 18；其餘 5 封交給 LLM（未設金鑰時轉人工，**0 封分錯**） |
 | 省下時間（假設的人工基準） | — | 全人工 137 分鐘 → 剩 14 分鐘 |
-| 測試 | 56 項 | 69 項（第三週累計 **88 項**，含 MS SQL、OCR、API、產線） |
+| 測試 | 56 項 | 69 項（第四週累計 **94 項**，含 MS SQL、OCR、API、產線、PAD 比對） |
 
 完整報告：`python -m factorypulse eval` → [reports/eval_batch01.md](reports/eval_batch01.md)
 
@@ -184,13 +186,17 @@ T-SQL View（[sql/mssql/views.sql](sql/mssql/views.sql)）：`vw_po_line_status`
 | LLM 分類流程與防呆 | 用假模型驗證流程；**尚未用真的 Gemini 跑過**，準確度待有金鑰後實測 |
 | n8n 錯誤警示流程 | **未驗證**：n8n 只在排程等正式執行出錯時觸發，手動執行不會 |
 | 推送真的 LINE | **未驗證**：需要 LINE 官方帳號金鑰 |
+| Power Automate Desktop 流程 | 比對工具與 `pad/檢查.sql` 已驗證；**PAD 流程本身尚未在 PAD 實際執行** |
+| 資料庫備份與還原 | 已實際備份並還原到測試資料庫確認 |
+
+完整驗收項目與待驗證的手動項目見 [docs/測試清單.md](docs/測試清單.md)。
 
 ## 路線圖
 
 - [x] **第一週**：MS SQL schema 與 View、PDF／Excel 解析、料號對應、驗算、異常比對、通知、執行紀錄、評測與 CI
 - [x] **第二週**：掃描檔 OCR、信件分類（規則＋Gemini Tool Calling）、API、Mailpit、n8n 排程與 LINE、Excel 日報、省時統計
 - [x] **第三週**：AOI 判定接入 MES、ETL、良率 p-chart、良率異常回查供應商批號、儀表板
-- [ ] **第四週**：Power Automate Desktop 版本與比較、一頁式操作說明、交接文件
+- [x] **第四週**：Power Automate Desktop 版本與比較、一頁式操作說明、驗收測試清單、交接文件（含已驗證的備份還原）
 
 ## 已知限制
 

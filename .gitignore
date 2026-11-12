@@ -15,3 +15,6 @@ reports/*
 # 評測報告留在版控，README 會連結
 !reports/eval_batch01.md
 !reports/eval_mes_batch01.md
+
+# 資料庫備份檔
+backup/

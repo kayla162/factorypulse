@@ -239,6 +239,21 @@ mes_yield_signal = Table(  # p-chart 失控點 ＋ 回查結果
 Index("ix_signal_line_date", mes_yield_signal.c.line, mes_yield_signal.c.prod_date, mes_yield_signal.c.rule,
       unique=True)
 
+# ---------------------------------------------------------------- Power Automate Desktop 對照組
+pad_delivery_staging = Table(  # PAD 流程讀 Excel 出貨單後寫進來，全部存文字，比對時再轉型
+    "pad_delivery_staging", metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("run_tag", Unicode(30), nullable=False),
+    Column("file_name", Unicode(200), nullable=False),
+    Column("doc_no", Unicode(40)),
+    Column("doc_date_text", Unicode(40)),
+    Column("po_no", Unicode(40)),
+    Column("vendor_part_no", Unicode(40)),
+    Column("qty_text", Unicode(40)),
+    Column("unit_price_text", Unicode(40)),
+    Column("loaded_at", DateTime, nullable=False),
+)
+
 # ---------------------------------------------------------------- 營運紀錄
 ops_anomaly = Table(
     "ops_anomaly", metadata,

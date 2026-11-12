@@ -76,6 +76,18 @@ def test_excel_skips_unrelated_sheet():
     assert doc.doc_type == "delivery" and len(doc.lines) == 2
 
 
+def test_excel_survives_layout_shift(tmp_path):
+    """供應商在表頭上方多插兩列：固定儲存格的做法（PAD 版）會錯位，依標籤找值的做法不受影響。"""
+    from openpyxl import load_workbook
+    wb = load_workbook(_file("C_delivery_01"))
+    wb.worksheets[0].insert_rows(1, amount=2)
+    shifted = tmp_path / "shifted.xlsx"
+    wb.save(shifted)
+    ans, doc = answer("C_delivery_01"), parse_document(shifted)
+    _check_header(doc, ans)
+    _check_lines("C_delivery_01", doc, ans)
+
+
 def test_scanned_pdf_without_ocr_is_flagged(monkeypatch):
     monkeypatch.setenv("FP_OCR", "0")
     with pytest.raises(NeedsOCR):

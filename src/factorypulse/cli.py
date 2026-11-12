@@ -112,6 +112,16 @@ def cmd_eval_mes(args):
         sys.exit(1)
 
 
+def cmd_pad_compare(args):
+    from .pad_compare import compare, to_markdown
+    eng = _engine(args)
+    init_db(eng)
+    md = to_markdown(compare(eng, Path(args.documents), args.run))
+    print(md)
+    config.REPORTS_DIR.mkdir(exist_ok=True)
+    (config.REPORTS_DIR / "pad_compare.md").write_text(md, encoding="utf-8")
+
+
 def cmd_status(args):
     eng = _engine(args)
     with eng.connect() as conn:
@@ -156,6 +166,10 @@ def main(argv=None):
     s.add_argument("--strict", action="store_true")
     s.add_argument("--max-fp", type=int, default=2, help="容許的誤報天數（3σ 管制圖本來就會有少量誤報）")
     s.set_defaults(func=cmd_eval_mes)
+    s = sub.add_parser("pad-compare", help="比對 Power Automate Desktop 流程與 Python 的解析結果")
+    s.add_argument("--documents", default=str(config.TESTDATA_DIR / "documents"))
+    s.add_argument("--run", help="PAD 批次標記，預設最新一批")
+    s.set_defaults(func=cmd_pad_compare)
     s = sub.add_parser("report", help="產生 Excel 日報")
     s.add_argument("--date", help="YYYY-MM-DD，預設今天")
     s.set_defaults(func=cmd_report)

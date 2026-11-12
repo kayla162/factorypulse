@@ -19,9 +19,13 @@ needs_ocr = pytest.mark.skipif(not HAS_OCR, reason="未安裝 rapidocr（pip ins
 
 
 @pytest.fixture(autouse=True)
-def _no_real_llm(monkeypatch):
-    """測試一律不打真的 LLM API：就算 .env 有金鑰也不會花錢。"""
+def _isolate_from_local_env(monkeypatch):
+    """測試不受本機 .env 影響：
+    - 一律不打真的 LLM API，就算 .env 有金鑰也不會花錢
+    - 儀表板公開模式回到預設關閉（本機示範可能設了 FP_DASHBOARD_PUBLIC=1）
+    """
     monkeypatch.setenv("FP_LLM", "0")
+    monkeypatch.delenv("FP_DASHBOARD_PUBLIC", raising=False)
 
 
 @pytest.fixture()
